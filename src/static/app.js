@@ -21,36 +21,71 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const spotsLeft = details.max_participants - details.participants.length;
 
-        activityCard.innerHTML = `
-          <h4>${name}</h4>
-          <p>${details.description}</p>
-          <p><strong>Schedule:</strong> ${details.schedule}</p>
-          <p><strong>Availability:</strong> ${spotsLeft} spots left</p>
-          <div class="participants-section">
-            <p class="participants-title"><strong>Participants:</strong></p>
-            <ul class="participants-list">
-              ${details.participants.length > 0
-                ? details.participants.map(
-                  (participant) => `
-                    <li>
-                      <span class="participant-email">${participant}</span>
-                      <button
-                        type="button"
-                        class="participant-delete-btn"
-                        data-activity="${name}"
-                        data-email="${participant}"
-                        aria-label="Unregister ${participant} from ${name}"
-                        title="Unregister participant"
-                      >
-                        &#128465;
-                      </button>
-                    </li>
-                  `
-                ).join("")
-                : '<li class="no-participants">No participants yet</li>'}
-            </ul>
-          </div>
-        `;
+        const h4 = document.createElement("h4");
+        h4.textContent = name;
+        activityCard.appendChild(h4);
+
+        const descP = document.createElement("p");
+        descP.textContent = details.description;
+        activityCard.appendChild(descP);
+
+        const schedP = document.createElement("p");
+        const schedStrong = document.createElement("strong");
+        schedStrong.textContent = "Schedule:";
+        schedP.appendChild(schedStrong);
+        schedP.appendChild(document.createTextNode(" " + details.schedule));
+        activityCard.appendChild(schedP);
+
+        const availP = document.createElement("p");
+        const availStrong = document.createElement("strong");
+        availStrong.textContent = "Availability:";
+        availP.appendChild(availStrong);
+        availP.appendChild(document.createTextNode(" " + spotsLeft + " spots left"));
+        activityCard.appendChild(availP);
+
+        const participantsSection = document.createElement("div");
+        participantsSection.className = "participants-section";
+
+        const participantsTitle = document.createElement("p");
+        participantsTitle.className = "participants-title";
+        const participantsTitleStrong = document.createElement("strong");
+        participantsTitleStrong.textContent = "Participants:";
+        participantsTitle.appendChild(participantsTitleStrong);
+        participantsSection.appendChild(participantsTitle);
+
+        const participantsList = document.createElement("ul");
+        participantsList.className = "participants-list";
+
+        if (details.participants.length > 0) {
+          details.participants.forEach((participant) => {
+            const li = document.createElement("li");
+
+            const span = document.createElement("span");
+            span.className = "participant-email";
+            span.textContent = participant;
+            li.appendChild(span);
+
+            const btn = document.createElement("button");
+            btn.type = "button";
+            btn.className = "participant-delete-btn";
+            btn.dataset.activity = name;
+            btn.dataset.email = participant;
+            btn.setAttribute("aria-label", "Unregister " + participant + " from " + name);
+            btn.setAttribute("title", "Unregister participant");
+            btn.textContent = "🗑️";
+            li.appendChild(btn);
+
+            participantsList.appendChild(li);
+          });
+        } else {
+          const li = document.createElement("li");
+          li.className = "no-participants";
+          li.textContent = "No participants yet";
+          participantsList.appendChild(li);
+        }
+
+        participantsSection.appendChild(participantsList);
+        activityCard.appendChild(participantsSection);
 
         activitiesList.appendChild(activityCard);
 
